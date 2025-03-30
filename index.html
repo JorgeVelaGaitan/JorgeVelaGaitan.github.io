@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta Medieval</title>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            font-family: 'MedievalSharp', cursive;
+            overflow: hidden;
+            transition: background 1s;
+        }
+        
+        .envelope-wrapper {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.5s;
+        }
+        
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: #8e44ad;
+            border-radius: 5px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+        
+        .envelope:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid #6c3483;
+            transform-origin: top;
+            transition: all 0.4s ease-in-out;
+            transform: rotateX(0deg);
+            z-index: 3;
+        }
+        
+        .envelope:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 100px solid #9b59b6;
+            z-index: 3;
+        }
+        
+        .wax-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: #c0392b;
+            border-radius: 50%;
+            z-index: 4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        
+        .wax-seal:before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.1);
+            border-radius: 50%;
+            top: 0;
+            left: 0;
+        }
+        
+        .calligraphic-v {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255,255,255,0.9);
+            font-size: 28px;
+            font-family: 'UnifrakturMaguntia', cursive;
+            font-weight: bold;
+        }
+        
+        .wax-crack {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .wax-crack:before,
+        .wax-crack:after {
+            content: '';
+            position: absolute;
+            background: rgba(0,0,0,0.3);
+            width: 2px;
+            height: 0;
+            top: 10%;
+            left: 50%;
+            transform-origin: top center;
+            transition: all 0.3s 0.3s;
+        }
+        
+        .wax-crack:before {
+            transform: rotate(30deg);
+        }
+        
+        .wax-crack:after {
+            transform: rotate(-30deg);
+        }
+        
+        .parchment {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f0e6c8;
+            z-index: 15;
+            display: none;
+            padding: 40px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            background-image: 
+                linear-gradient(rgba(200,180,140,0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(200,180,140,0.3) 1px, transparent 1px);
+            background-size: 20px 20px;
+            border: 15px solid transparent;
+            border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="none" stroke="%23795548" stroke-width="10" stroke-dasharray="10,5" stroke-linecap="round"/></svg>') 15;
+        }
+        
+        .parchment-content {
+            max-width: 800px;
+            margin: 0 auto;
+            color: #3a2c1e;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            padding: 40px;
+            background: rgba(240,230,200,0.7);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .parchment h1 {
+            font-family: 'UnifrakturMaguntia', cursive;
+            text-align: center;
+            color: #5c3927;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        
+        .address {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        
+        .letter-body p {
+            margin-bottom: 1.5em;
+            text-indent: 1em;
+        }
+        
+        .signature {
+            font-family: 'UnifrakturMaguntia', cursive;
+            text-align: right;
+            margin-top: 40px;
+            font-size: 1.8rem;
+            color: #5c3927;
+        }
+        
+        .open .envelope:before {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+        
+        .open .wax-seal {
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 0;
+        }
+        
+        .open .wax-crack {
+            opacity: 1;
+        }
+        
+        .open .wax-crack:before,
+        .open .wax-crack:after {
+            height: 80%;
+        }
+        
+        .show {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .close-btn {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #8e44ad;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            z-index: 20;
+            display: none;
+        }
+        
+        .close-btn:hover {
+            transform: scale(1.1);
+            background: #6c3483;
+        }
+        
+        @media (max-width: 768px) {
+            .parchment {
+                padding: 20px;
+            }
+            
+            .parchment-content {
+                padding: 20px;
+                font-size: 1rem;
+            }
+            
+            .parchment h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="envelope-wrapper">
+        <div class="envelope">
+            <div class="wax-seal">
+                <div class="calligraphic-v">V</div>
+                <div class="wax-crack"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="parchment">
+        <div class="parchment-content">
+            <h1>Severo Vesánida, Conde de Castroponce y Barón de Novales</h1>
+            
+            <div class="address">
+                <p>A Su Majestad, Braulio I de Guise,</p>
+                <p>Portador del Legado del Ganso,</p>
+                <p>Luz del Sol que guía a Treoria,</p>
+                <p>Escudo de la Corola y espada del Segador.</p>
+            </div>
+            
+            <div class="letter-body">
+                <p>Que las flores de la victoria perfumen su camino y que la Símente bendiga sus tierras con abundancia. Con el corazón abierto como un lirio bajo el sol, me dirijo a Vos en este día, no solo como vasallo leal, sino como hombre que ha encontrado en la nobleza de vuestra estirpe un jardín donde cultivar honradez y devoción.</p>
+                
+                <p>Durante la reciente reunión en Nabimia, bajo la atenta mirada de la regente Aldara de Guise, la fortuna —o acaso el designio del Segador— permitió que mis sentimientos germinaran como semilla en tierra fértil. He tenido el honor de acompañar a la regente en el torneo de tiro con arco, donde me honro con su compañía en el palco real, y de compartir con ella versos tejidos con la verdad de la violeta y el amor del clavel.</p>
+                
+                <p>Consciente de que toda flor debe crecer bajo la luz que le corresponde, os ruego, Majestad, permiso para continuar este cortejo. Juro ante la Corola que mi intención es honrar a vuestra casa con la fuerza, la lealtad y el respeto que merece el cáliz de vuestro linaje.</p>
+                
+                <p>Treoria ha visto cómo nuestros ejércitos, guiados por vuestra mano, han restaurado la gloria del reino. Soldados y siervos le apodan "el Conquistador" por haber devuelto Ceunsas y Cazmuernas al dominio del ganso, y "el Salvador" por rescatar a los nobles cautivos, incluido mi pariente Heradio Vesánida. Las crónicas ya comparan vuestras campañas con las de Adregoto II, pues bajo vuestro mando, Treoria ha recuperado el honor perdido.</p>
+                
+                <p>Como regente de los Vesánida durante la ausencia de mi duque, cumplí escrupulosamente con mis obligaciones: mantuve las minas de Castroponce produciendo hierro para la guerra y aseguré la lealtad, por algunos cuestionada, de nuestro ducado hacia Vuestra Majestad. Lejos de alimentar divisiones internas - especialmente ante los crecientes rumores de tensiones entre las casas Ávida y Vemén - he considerado muestra de lealtad hacia la corona el mediar entre ambos duques, buscando encauzar sus diferencias para que, llegado el caso, nuestras fuerzas estén unidas frente a cualquier posible contraataque de Dalaman.</p>
+                
+                <p>Esta misma lealtad que me ha guiado durante la guerra y en la delicada tarea de mediar entre Duques, es la que ahora me impulsa a dirigirme a Vos con sincero respeto. Así como he servido a Vesanida, deseo servir a vuestra casa con el mismo fervor, no ya como noble, sino como hombre que ha encontrado en la regente Aldara cualidades que merecen ser honradas.</p>
+                
+                <p>Confío en que vuestro juicio, tan sabio en la guerra como en la paz, verá en esta petición no un acto de ambición, sino el deseo de unir mi destino al de quien ha demostrado ser vuestra más capaz representante durante vuestra ausencia. Con vuestro permiso, espero demostrar que el corazón de un Vesánida puede latir con tanta fuerza por amor como por deber.</p>
+            </div>
+            
+            <div class="signature">Severo Vesánida</div>
+        </div>
+    </div>
+
+    <button class="close-btn" onclick="closeLetter()">×</button>
+
+    <script>
+        document.querySelector('.envelope-wrapper').addEventListener('click', openLetter);
+        
+        function openLetter() {
+            document.querySelector('.envelope-wrapper').classList.add('open');
+            
+            setTimeout(() => {
+                document.querySelector('.parchment').classList.add('show');
+                document.querySelector('.close-btn').style.display = 'flex';
+                document.body.style.background = '#d9c7a7';
+            }, 800);
+        }
+        
+        function closeLetter() {
+            document.querySelector('.parchment').classList.remove('show');
+            document.querySelector('.close-btn').style.display = 'none';
+            document.body.style.background = '#f5f5f5';
+            
+            setTimeout(() => {
+                document.querySelector('.envelope-wrapper').classList.remove('open');
+            }, 500);
+        }
+    </script>
+</body>
+</html>
